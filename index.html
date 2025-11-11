@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Five-Cube-illion Poems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        h1 {
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+        }
+
+        .color-key {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .color-sample {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 3px;
+        }
+
+        .cube-container {
+            background: rgba(255,255,255,0.2);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .cube-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .cube-cell {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: lowercase;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .cube-cell:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        .cube-cell.r { background-color: #e74c3c; color: #fff; }
+        .cube-cell.o { background-color: #e67e22; color: #fff; }
+        .cube-cell.y { background-color: #f1c40f; color: #333; }
+        .cube-cell.g { background-color: #2ecc71; color: #fff; }
+        .cube-cell.b { background-color: #3498db; color: #fff; }
+        .cube-cell.w { background-color: #ecf0f1; color: #333; }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #generateBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #generateBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        #generateBtn:active {
+            transform: translateY(0);
+        }
+
+        #generateBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .poem-container {
+            margin-top: 30px;
+            max-width: 800px;
+            display: none;
+        }
+
+        .poem-container.visible {
+            display: block;
+        }
+
+        .poem-images {
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .poem-line {
+            text-align: center;
+        }
+
+        .poem-line img {
+            max-width: 100%;
+            height: auto;
+            display: inline-block;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Five-Cube-illion Poems</h1>
+
+    <div class="instructions">
+        <p><strong>Enter the colors from your 5×5 Rubik's cube:</strong></p>
+        <div class="color-key">
+            <div class="color-item">
+                <div class="color-sample" style="background-color: #e74c3c;"></div>
+                <span>R - Red</span>
+            </div>
+            <div class="color-item">
+                <div class="color-sample" style="background-color: #e67e22;"></div>
+                <span>O - Orange</span>
+            </div>
+            <div class="color-item">
+                <div class="color-sample" style="background-color: #f1c40f;"></div>
+                <span>Y - Yellow</span>
+            </div>
+            <div class="color-item">
+                <div class="color-sample" style="background-color: #2ecc71;"></div>
+                <span>G - Green</span>
+            </div>
+            <div class="color-item">
+                <div class="color-sample" style="background-color: #3498db;"></div>
+                <span>B - Blue</span>
+            </div>
+            <div class="color-item">
+                <div class="color-sample" style="background-color: #ecf0f1;"></div>
+                <span>W - White</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cube-container">
+        <div class="cube-grid" id="cubeGrid"></div>
+        <div class="controls">
+            <button id="generateBtn">Generate Poem</button>
+        </div>
+    </div>
+
+    <div class="poem-container" id="poemContainer">
+        <div class="poem-images" id="poemImages"></div>
+    </div>
+
+    <script>
+        const validColors = ['r', 'o', 'y', 'g', 'b', 'w'];
+        const cubeGrid = document.getElementById('cubeGrid');
+        const generateBtn = document.getElementById('generateBtn');
+        const poemContainer = document.getElementById('poemContainer');
+        const poemImages = document.getElementById('poemImages');
+        const cells = [];
+
+        // Create 5x5 grid of input cells
+        for (let i = 1; i <= 25; i++) {
+            const cell = document.createElement('input');
+            cell.type = 'text';
+            cell.maxLength = 1;
+            cell.className = 'cube-cell';
+            cell.dataset.position = i;
+
+            cell.addEventListener('input', handleInput);
+            cell.addEventListener('keydown', handleKeydown);
+
+            cubeGrid.appendChild(cell);
+            cells.push(cell);
+        }
+
+        function handleInput(e) {
+            const value = e.target.value.toLowerCase();
+
+            // Clear invalid colors
+            if (value && !validColors.includes(value)) {
+                e.target.value = '';
+                e.target.className = 'cube-cell';
+                return;
+            }
+
+            // Apply color class
+            e.target.value = value;
+            e.target.className = 'cube-cell' + (value ? ' ' + value : '');
+
+            // Auto-advance to next cell
+            if (value) {
+                const currentIndex = cells.indexOf(e.target);
+                if (currentIndex < cells.length - 1) {
+                    cells[currentIndex + 1].focus();
+                }
+            }
+
+            updateGenerateButton();
+        }
+
+        function handleKeydown(e) {
+            const currentIndex = cells.indexOf(e.target);
+
+            // Navigate with arrow keys
+            if (e.key === 'ArrowRight' && currentIndex < cells.length - 1) {
+                e.preventDefault();
+                cells[currentIndex + 1].focus();
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                e.preventDefault();
+                cells[currentIndex - 1].focus();
+            } else if (e.key === 'ArrowDown' && currentIndex < cells.length - 5) {
+                e.preventDefault();
+                cells[currentIndex + 5].focus();
+            } else if (e.key === 'ArrowUp' && currentIndex >= 5) {
+                e.preventDefault();
+                cells[currentIndex - 5].focus();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!generateBtn.disabled) {
+                    generatePoem();
+                }
+            } else if (e.key === 'Backspace' && !e.target.value && currentIndex > 0) {
+                // If backspace on empty cell, go to previous
+                e.preventDefault();
+                cells[currentIndex - 1].focus();
+            }
+        }
+
+        function updateGenerateButton() {
+            const allFilled = cells.every(cell => validColors.includes(cell.value));
+            generateBtn.disabled = !allFilled;
+        }
+
+        function generatePoem() {
+            poemImages.innerHTML = '';
+
+            // Collect all color values
+            const colors = cells.map(cell => cell.value);
+
+            // Create poem by loading images for each position
+            colors.forEach((color, index) => {
+                const position = index + 1;
+                const img = document.createElement('img');
+                img.src = `images/pos${position}/${color}.png`;
+                img.alt = `Line ${position}`;
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    console.warn(`Image not found: images/pos${position}/${color}.png`);
+                };
+
+                const line = document.createElement('div');
+                line.className = 'poem-line';
+                line.appendChild(img);
+                poemImages.appendChild(line);
+            });
+
+            poemContainer.classList.add('visible');
+            poemContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        generateBtn.addEventListener('click', generatePoem);
+
+        // Focus first cell on load
+        cells[0].focus();
+    </script>
+</body>
+</html>
